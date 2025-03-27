@@ -5,6 +5,7 @@
 #include <iostream>
 #include <err.h>
 #include "dataframe.h"
+#include <sstream>
 
 DataFrame::DataFrame(const std::string& file_name, bool uses_headers, const char* delimeter = ",") {
     std::ifstream data_file(file_name, std::ios::binary);
@@ -33,6 +34,15 @@ DataFrame::DataFrame(const std::string& file_name, bool uses_headers, const char
     } else { // Case if headers are not provided
         // To Do Later
         // We assume that num features is non-zero
+        std::string first_line;
+        if (std::getline(data_file, first_line)) {
+            std::stringstream ss(first_line); //we make string stream called ss that helps us divide first_line with delimiter
+            std::string first_words;
+
+            while (std::getline(ss, first_words, *delimeter)) { //counting how many columns
+                num_features++;
+            }
+        }
     }
 
     // After we readed header names and got feture names, we can load out our data
