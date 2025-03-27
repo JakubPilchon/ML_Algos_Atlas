@@ -28,6 +28,8 @@ public:
     Row operator[](size_t) const;
     // getter out of target
     double get_target(size_t i) const;
+    // shuffles our data
+    void shuffle_data(std::vector<Row>& data, std::vector<double>& target);
 
     // prints row in the console
     void print_row(size_t i) const;

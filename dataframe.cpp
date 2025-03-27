@@ -6,6 +6,9 @@
 #include <err.h>
 #include "dataframe.h"
 #include <sstream>
+#include <algorithm>
+#include <random>
+#include <__random/random_device.h>
 
 DataFrame::DataFrame(const std::string& file_name, bool uses_headers, const char* delimeter = ",") {
     std::ifstream data_file(file_name, std::ios::binary);
@@ -45,13 +48,13 @@ DataFrame::DataFrame(const std::string& file_name, bool uses_headers, const char
         }
     }
 
-    // After we readed header names and got feture names, we can load out our data
+    // After we read header names and got feature names, we can load out our data
     std::string row_text, number;
     int i = 0;
     while (std::getline(data_file, row_text)) {
         Row row = Row(new double[num_features]);
         for (auto c : row_text) {
-            // split the line by out delimeter, then one-by-one add a new number to our row
+            // split the line by out delimiter, then one-by-one add a new number to our row
             if (c != *delimeter) {
                 number.push_back(c);
             } else {
@@ -95,6 +98,31 @@ size_t DataFrame::get_num_features() const {
     return num_features;
 }
 
+void DataFrame::shuffle_data(std::vector<Row>& data, std::vector<double>& target) {
+    if (data.size() != target.size()) {
+        throw std::out_of_range("Data size mismatch");
+    }
 
+    std::vector<size_t> idxs(data.size());
+    for (size_t i = 0; i < idxs.size(); i++) { // We make vector with indices {0,...,n-1}
+        idxs[i] = i;
+    }
+
+    std::random_device rd; // seed
+    std::mt19937 gen(rd()); // Generator of pseudo-random numbers
+
+    std::shuffle(idxs.begin(), idxs.end(), gen); // We shuffle our indices
+
+    std::vector<Row> shuffled_data;
+    std::vector<double> shuffled_target;
+
+    for (size_t i : idxs) {
+        shuffled_data.push_back(data[i]);
+        shuffled_target.push_back(target[i]);
+    }
+
+    data = std::move(shuffled_data); // We move contents of shuffled_data to data instead of copying it
+    target = std::move(shuffled_target);
+}
 
 
