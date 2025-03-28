@@ -10,7 +10,7 @@
 - [ ] Base class `Model` dla naszych algorytmów ML
   - Kiedy będziemy implementować poszczególne modele to z tej klasy będziemy [dziedziczyć](https://www.youtube.com/watch?v=ZesZXlBcROA).
     Potem się to nam przyda (by potem wrzucać modele do tych samych funkcji dzięki [poliformizmowi](https://www.youtube.com/watch?v=9hGPe6BnTY4))
-  - zaimplementować [wirtualne](https://www.geeksforgeeks.org/virtual-function-cpp/) metody: `fit`, `run`
+  - zaimplementować [wirtualne](https://www.geeksforgeeks.org/virtual-function-cpp/) metody: `fit`, `predict`
 - [ ] Model - [KNN](https://www.youtube.com/watch?v=HVXime0nQeI)
 - [ ] [Walidacja krzyżowa](https://pl.wikipedia.org/wiki/Sprawdzian_krzy%C5%BCowy)
 - [ ] funckja do sprawdzania [Dokładności precyzji i czułości](https://developers.google.com/machine-learning/crash-course/classification/accuracy-precision-recall?hl=pl)
