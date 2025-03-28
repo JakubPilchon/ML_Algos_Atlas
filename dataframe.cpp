@@ -8,7 +8,7 @@
 #include <sstream>
 #include <algorithm>
 #include <random>
-#include <__random/random_device.h>
+//#include <__random/random_device.h>
 
 DataFrame::DataFrame(const std::string& file_name, bool uses_headers, const char* delimeter = ",") {
     std::ifstream data_file(file_name, std::ios::binary);
@@ -20,20 +20,23 @@ DataFrame::DataFrame(const std::string& file_name, bool uses_headers, const char
 
     if (uses_headers) { // Case if headers are in a file
         std::string headers, temp;
-        getline(data_file, headers);
+        if (getline(data_file, headers)) {
 
-        for (auto c : headers) {
-            if (c != *delimeter) {
-                temp += c;
-            } else {
-                head_names.push_back(temp);
-                temp.clear();
-                num_features++;
+            for (auto c : headers) {
+                if (c != *delimeter) {
+                    temp += c;
+                } else {
+                    head_names.push_back(temp);
+                    temp.clear();
+                    num_features++;
+                }
             }
-        }
-        head_names.push_back(temp);
-        temp.clear();
+            head_names.push_back(temp);
+            temp.clear();
 
+        } else {
+            throw std::runtime_error("File is empty");
+        }
     } else { // Case if headers are not provided
         // To Do Later
         // We assume that num features is non-zero
@@ -41,10 +44,25 @@ DataFrame::DataFrame(const std::string& file_name, bool uses_headers, const char
         if (std::getline(data_file, first_line)) {
             std::stringstream ss(first_line); //we make string stream called ss that helps us divide first_line with delimiter
             std::string first_words;
+            // we dont know the number of features, so we use vector
+            std::vector<double> first_features;
 
+            // we read the numbers from first row into the vector
             while (std::getline(ss, first_words, *delimeter)) { //counting how many columns
-                num_features++;
+                first_features.push_back(std::stod(first_words));
             }
+
+            Row first_row(new double[first_features.size() - 1]);
+            for (int i = 0; i < first_features.size() - 1; i++) {
+                first_row[i] = first_features[i];
+            }
+
+            data.push_back(first_row);
+            target.push_back(first_features.back());
+            num_features = first_features.size() - 1;
+
+        } else {
+            throw std::runtime_error("File is empty");
         }
     }
 
@@ -123,6 +141,11 @@ void DataFrame::shuffle_data(std::vector<Row>& data, std::vector<double>& target
 
     data = std::move(shuffled_data); // We move contents of shuffled_data to data instead of copying it
     target = std::move(shuffled_target);
+}
+
+
+void DataFrame::shuffle_data() {
+    shuffle_data(data, target);
 }
 
 
