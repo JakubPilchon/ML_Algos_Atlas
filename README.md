@@ -7,7 +7,7 @@
     - Myślę że dane będziemy przechowywać jako [vector](https://en.cppreference.com/w/cpp/container/vector) [shared_pointer-ów](https://www.youtube.com/watch?v=4bdp9aHzuQY) do tablicy, gdzie tablice będą naszymi wierszami.
       - dzięki temu gdy będziemy tworzyć now Dataframe-y to zamiast kopiować wszystkich danych będziemy tylko kopiować wskaźniki do nich.
       - `shared_pointer` bardzo ułatwi życie w zarządzaniu pamięcią. Bedziemy korzystać z [dynamicznie alokowanych tablic](https://mattomatti.com/pl/cp14), bo niewiemy ile kolumn będzie w pliku csv
-- [ ] Base class `Model` dla naszych algorytmów ML
+- [x] Base class `Model` dla naszych algorytmów ML
   - Kiedy będziemy implementować poszczególne modele to z tej klasy będziemy [dziedziczyć](https://www.youtube.com/watch?v=ZesZXlBcROA).
     Potem się to nam przyda (by potem wrzucać modele do tych samych funkcji dzięki [poliformizmowi](https://www.youtube.com/watch?v=9hGPe6BnTY4))
   - zaimplementować [wirtualne](https://www.geeksforgeeks.org/virtual-function-cpp/) metody: `fit`, `predict`
