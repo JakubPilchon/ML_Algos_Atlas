@@ -3,4 +3,6 @@ project(Atlas_projekt)
 
 set(CMAKE_CXX_STANDARD 20)
 
-add_executable(Atlas_projekt main.cpp)
+add_executable(Atlas_projekt main.cpp
+        dataframe.h
+        dataframe.cpp)
