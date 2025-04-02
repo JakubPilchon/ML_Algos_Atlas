@@ -34,25 +34,26 @@ private:
 public:
     // vector used for header names
     std::vector<std::string> head_names;
-
     // Main constructor
     DataFrame(const std::string&, bool, const char*);
     // getter for out data, using overloaded []
-    Row operator[](size_t) const;
+    std::pair<Row, double> operator[](size_t) const;
     // getter out of target
     double get_target(size_t i) const;
-
+    // getter out of data
+    Row get_data(size_t i) const;
     // public method for shuffling itself
     void shuffle_data();
-
     // prints row in the console
     void print_row(size_t i) const;
+    //prints a couple of rows for debugging
+    void head(size_t = 5) const;
     // getters for length and number of features
     size_t length() const;
     size_t get_num_features() const;
 
     //splits dataset into two - training and test sets
-    std::pair<DataFrame, DataFrame> train_test_split(float);
+    std::pair<DataFrame, DataFrame> train_test_split(float) const;
 };
 
 

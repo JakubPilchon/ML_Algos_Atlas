@@ -11,7 +11,17 @@ int main() {
 
     auto [train_dataframe, test_dataframe] = data_frame.train_test_split(0.5);
 
-    std::cout << "Train dataframe size: "<< train_dataframe.length() << std::endl;
-    std::cout << "Test dataframe size: "<< test_dataframe.length() << std::endl;
+    std::cout << "Train: "  << std::endl;
+    train_dataframe.head();
+
+    std::cout << "Test: "  << std::endl;
+    test_dataframe.head();
+
+    auto [row, t] = train_dataframe[0];
+    std::cout << row[0] << std::endl;
+    std::cout << t << std::endl;
+
+    auto row2 = train_dataframe.get_data(0);
+    std::cout << row2[0] << std::endl;
     return 0;
 }

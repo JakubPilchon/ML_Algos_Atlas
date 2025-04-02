@@ -90,7 +90,13 @@ DataFrame::DataFrame(const std::string& file_name, bool uses_headers, const char
     }
 }
 
-Row  DataFrame::operator[](size_t index) const {
+std::pair<Row, double> DataFrame::operator[](size_t i) const {
+    return {data[i], target[i]};
+}
+
+
+
+Row  DataFrame::get_data(size_t index) const {
     return data[index];
 }
 
@@ -101,7 +107,7 @@ void DataFrame::print_row(const size_t i) const{
      for (uint j = 0; j < num_features; j++) {
         std::cout << data[i][j] << " ";
      }
-     std::cout << std::endl;
+     std::cout <<"   " << get_target(i) << std::endl;
 }
 
 double  DataFrame::get_target(const size_t i) const {
@@ -149,7 +155,7 @@ void DataFrame::shuffle_data() {
 }
 
 
-std::pair<DataFrame, DataFrame> DataFrame::train_test_split(float test_size) {
+std::pair<DataFrame, DataFrame> DataFrame::train_test_split(float test_size) const{
     /*
         This method splits out dataset into two:
           * training dataset
@@ -198,6 +204,13 @@ std::pair<DataFrame, DataFrame> DataFrame::train_test_split(float test_size) {
     return {x_train, x_test};
 
 }
+
+void DataFrame::head(size_t num) const {
+    for (size_t i = 0; i < std::min(num, data.size()); i++) {
+        print_row(i);
+    }
+}
+
 
 
 
