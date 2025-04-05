@@ -1,7 +1,7 @@
 # Algorytmy ML w cpp
 
 ## Plan
-- [ ] Klasa `Dataframe` do wczytywania danych z pliku `.csv` 
+- [x] Klasa `Dataframe` do wczytywania danych z pliku `.csv` 
     - metoda `shuffle` do przetasowywania danych w losowy sposób (za pomocą algorytmy [Fishcer-Yates](https://en.wikipedia.org/wiki/Fisher%E2%80%93Yates_shuffle)) 
     - metoda `train_test_split` - do podzielenia danych na zbiór testowy i treningowy,
     - Myślę że dane będziemy przechowywać jako [vector](https://en.cppreference.com/w/cpp/container/vector) [shared_pointer-ów](https://www.youtube.com/watch?v=4bdp9aHzuQY) do tablicy, gdzie tablice będą naszymi wierszami.
