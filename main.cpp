@@ -1,5 +1,6 @@
 #include <iostream>
 #include "dataframe.h"
+#include "Models.h"
 
 int main() {
 
@@ -9,19 +10,29 @@ int main() {
         std::cout << header << std::endl;
     }
 
-    auto [train_dataframe, test_dataframe] = data_frame.train_test_split(0.5);
+    auto first_node = std::make_unique<Node>( new Node());
 
-    std::cout << "Train: "  << std::endl;
-    train_dataframe.head();
+    first_node->is_leaf = false;
+    first_node->index = 2;
+    first_node->threshold = 0;
 
-    std::cout << "Test: "  << std::endl;
-    test_dataframe.head();
+    auto second_node = std::make_unique<Node>(new Node());
+    second_node->is_leaf = true;
+    second_node->value = 1.;
 
-    auto [row, t] = train_dataframe[0];
-    std::cout << row[0] << std::endl;
-    std::cout << t << std::endl;
+    auto third_node = std::make_unique<Node>(new Node());
+    third_node->is_leaf = true;
+    third_node->value = 0.;
 
-    auto row2 = train_dataframe.get_data(0);
-    std::cout << row2[0] << std::endl;
-    return 0;
+
+    first_node->gretereq = std::move(second_node);
+    first_node->less = std::move(third_node);
+
+    DecisionTreeModel model;
+
+    model.set_first(std::move(first_node));
+    auto [row, target] = data_frame[0];
+    std::cout << model.predict(row) << std::endl;
+    std::cout << "Hello world!" << std::endl;
+
 }
