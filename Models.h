@@ -5,6 +5,7 @@
 #ifndef MODELS_H
 #define MODELS_H
 #include "dataframe.h"
+#include <map>
 #include <memory>
 
 // using unique_ptr to not to deal with all the memory shanenigans
@@ -53,12 +54,19 @@ struct Node {
 class DecisionTreeModel : public Model {
     private:
         int counter = 0;
-        double calculate_entropy(std::vector<Row>) const;
-        NodePtr first = std::make_unique<Node>();;
+
+        NodePtr first;
+
     public:
         void set_first(NodePtr); // DEBUG METHOD
         double predict(Row) const override;
         void fit(const DataFrame&) override;
+
+        // Move below to private!!
+        double calculate_entropy(const std::map<double, size_t>&, size_t) const;
+        void sort_by_feature(std::vector<size_t>& indexes,  size_t feature, const DataFrame& df) const;
+        NodePtr build_node(const DataFrame&, std::vector<size_t> ) const;
+
 };
 
 #endif //MODELS_H
