@@ -7,4 +7,5 @@ add_executable(Atlas_projekt main.cpp
         dataframe.h
         dataframe.cpp
         Models.h
+        LogisticRegression.cpp
 )
