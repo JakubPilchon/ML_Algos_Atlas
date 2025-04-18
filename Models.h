@@ -4,6 +4,8 @@
 
 #ifndef MODELS_H
 #define MODELS_H
+#include <format>
+
 #include "dataframe.h"
 /*
  *  ALL models should inherit from `Model` class.
@@ -18,10 +20,10 @@
 class Model {
     public:
         // this method predicts the single target of the row
-        virtual double predict(Row) const;
+        virtual double predict(Row) const = 0;
 
         // this method trains the models
-        virtual void fit(const DataFrame&);
+        virtual void fit(const DataFrame&) = 0;
 };
 
 class KNNModel : public Model {
@@ -32,6 +34,22 @@ class KNNModel : public Model {
         explicit KNNModel(unsigned int);
         double predict(Row) const override;
         void fit(const DataFrame&) override;
+};
+class LogisticRegressionModel : public Model {
+    private:
+    // weights and bias are the parameters of our function
+    std::vector <double> weights;
+    double bias;
+    // learning_rate and epochs are parameters for fitting the model
+    double learning_rate=0.001;
+    double epochs=1000;
+public:
+    double predict(Row) const override;
+    void fit(const DataFrame&) override;
+//    double compute_cost(const DataFrame&); // testing whether the function accuracy improved or not; used for debugging
+    double logit(double) const; // the logarithmic function used in model
+    void weights_resize(unsigned int);
+
 };
 
 #endif //MODELS_H
