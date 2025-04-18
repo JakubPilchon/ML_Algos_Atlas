@@ -28,20 +28,93 @@ double DecisionTreeModel::predict(std::shared_ptr<double[]> row) const {
     return prediction;
 }
 
-// TO BE DELETED
-void DecisionTreeModel::set_first(std::unique_ptr<Node> first_node) {
-    first = std::move(first_node);
-}
+
 
 void DecisionTreeModel::sort_by_feature(std::vector<size_t>& indexes,
                                         size_t feature,
                                         const DataFrame& df) const {
     sort (indexes.begin(), indexes.end(),
-    [feature, df](size_t i, size_t j) {return df.get_data(i)[feature] > df.get_data(j)[feature];}); // lambda functon for comparing rows
-    //sort(data.begin(), data.end(), [index](std::shared_ptr<double[]> a, std::shared_ptr<double[]> b) {return a[index] < b[index];});
+    [feature, df](size_t i, size_t j) {return df.get_data(i)[feature] < df.get_data(j)[feature];}); // lambda functon for comparing rows
 }
 
-NodePtr DecisionTreeModel::build_node(const DataFrame& df, std::vector<size_t> indexes) const {
+NodePtr DecisionTreeModel::build_node(const DataFrame& df, std::vector<size_t>& row_indexes) const {
+    /*
+     * Check purity of dataset
+     * if the data is pure enough create leaf node
+     * else crate branch node with recursive children building
+     *
+     *
+     */
+    double  max_category, purity =0, sum_of_count=0;
+    std::map<double, size_t> less_value_counts, greater_value_counts;
+
+    // create value counts
+    for (auto index : row_indexes) {
+        double val = df.get_target(index);
+        if (less_value_counts.contains(val)) {
+            less_value_counts[val]++;
+        } else {
+            less_value_counts.insert(std::make_pair(val, 1));
+            greater_value_counts.insert(std::make_pair(val, 0));
+        }
+    }
+
+    for (auto [category, count] : less_value_counts) {
+        if (count > purity) {
+            purity = static_cast<double>(count);
+            max_category = category;
+        }
+        sum_of_count += count;
+    }
+
+    purity = purity / sum_of_count;
+    std::cout << purity << std::endl;
+    if (purity >= min_purity) {
+        // Create leaf node
+        NodePtr node = std::make_unique<Node>(new Node());
+        node->is_leaf = true;
+        node->value = max_category;
+        return node;
+    } else {
+        double category, best_feature, min_entropy = 1.7976931348623157E+308;
+        size_t best_split=0, counter;
+
+        for (size_t feature = 0; feature < df.get_num_features(); feature++ ) {
+            counter = 0;
+            sort_by_feature(row_indexes, feature, df);
+
+            for (size_t i : row_indexes) {
+                counter++;
+                category = df.get_target(i);
+                less_value_counts[category]--;
+                greater_value_counts[category]++;
+
+                double entropy = calculate_entropy(greater_value_counts, counter) +
+                                 calculate_entropy(less_value_counts, row_indexes.size() -counter);
+
+                if (entropy < min_entropy) {
+                    min_entropy = entropy;
+                    best_feature = feature;
+                    best_split = counter;
+                    }
+                }
+
+            std::swap(less_value_counts, greater_value_counts);
+            }
+
+        sort_by_feature(row_indexes, best_feature, df);
+        std::vector<size_t> less_indexes(row_indexes.begin(), row_indexes.begin() + best_split),
+                    greater_indexes(row_indexes.begin() + best_split, row_indexes.end());
+
+        NodePtr node = std::make_unique<Node>(new Node());
+        node->is_leaf = false;
+        node->index = best_feature;
+        node->threshold = df.get_data(greater_indexes[0])[best_feature];
+
+        node->less = build_node(df, less_indexes);
+        node->gretereq = build_node(df, greater_indexes);
+        return node;
+    }
 
 }
 
@@ -61,32 +134,12 @@ double DecisionTreeModel::calculate_entropy(const std::map<double, size_t>& val_
 void DecisionTreeModel::fit(const DataFrame& df) {
     // deletes the first pointer in case model already has been trained
     // effectively reseting it
-    if (first) {
-        first.release();
-    }
+     if (first) {
+         first.release();
+     }
 
     std::vector<size_t> row_indexes(df.length());
     std::iota(row_indexes.begin(), row_indexes.end(), 0);
 
-    // find unique categorical elements
-    // auto it = std::unique(row_indexes.begin(), row_indexes.end(),
-    //     [df](size_t i, size_t j) { return (df.get_target(i) == df.get_target(j)); });
-
-    std::map<double, size_t> value_counts;
-
-    for (auto index : row_indexes) {
-        double val = df.get_target(index);
-        if (value_counts.contains(val)) {
-            value_counts[val]++;
-        } else {
-            value_counts.insert(std::make_pair(val, 1));
-        }
-    }
-
-
-    for (auto it : value_counts) {
-
-        std::cout << it.first << " " << it.second << std::endl;
-    }
-    std::cout << "Entropy: " << calculate_entropy(value_counts, row_indexes.size()) <<std::endl;
+    first = build_node(df, row_indexes);
 }

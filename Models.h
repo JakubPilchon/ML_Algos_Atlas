@@ -53,19 +53,24 @@ struct Node {
 
 class DecisionTreeModel : public Model {
     private:
-        int counter = 0;
-
+        double min_purity;
         NodePtr first;
 
     public:
-        void set_first(NodePtr); // DEBUG METHOD
+        DecisionTreeModel(double min_purity = 0.9) {
+            if (min_purity <= 0 || min_purity > 1) {
+                throw std::invalid_argument("min_purity must be between 0 and 1");
+            }
+            this->min_purity = min_purity;
+        };
+
         double predict(Row) const override;
         void fit(const DataFrame&) override;
 
         // Move below to private!!
         double calculate_entropy(const std::map<double, size_t>&, size_t) const;
         void sort_by_feature(std::vector<size_t>& indexes,  size_t feature, const DataFrame& df) const;
-        NodePtr build_node(const DataFrame&, std::vector<size_t> ) const;
+        NodePtr build_node(const DataFrame&, std::vector<size_t>&s ) const;
 
 };
 
