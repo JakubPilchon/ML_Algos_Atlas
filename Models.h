@@ -45,8 +45,8 @@ class Model {
 // structure representing each node in the tree (both branches and leafes)
 struct Node {
     bool is_leaf;
-    double value, threshold;
-    size_t index;
+    double value =-1, threshold =-1;
+    size_t index = NULL;
     NodePtr gretereq = nullptr;
     NodePtr less = nullptr;
 };

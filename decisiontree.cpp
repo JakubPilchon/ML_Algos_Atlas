@@ -42,11 +42,11 @@ NodePtr DecisionTreeModel::build_node(const DataFrame& df, std::vector<size_t>& 
      * Check purity of dataset
      * if the data is pure enough create leaf node
      * else crate branch node with recursive children building
-     *
-     *
      */
-    double  max_category, purity =0, sum_of_count=0;
-    std::map<double, size_t> less_value_counts, greater_value_counts;
+    double  max_category; // most common category in data
+    double purity =0; // number of most common category in data
+    std::map<double, size_t> less_value_counts, greater_value_counts; // holds the number of categories in data
+
 
     // create value counts
     for (auto index : row_indexes) {
@@ -59,26 +59,27 @@ NodePtr DecisionTreeModel::build_node(const DataFrame& df, std::vector<size_t>& 
         }
     }
 
+    // calculate purity
     for (auto [category, count] : less_value_counts) {
         if (count > purity) {
             purity = static_cast<double>(count);
             max_category = category;
         }
-        sum_of_count += count;
     }
+    purity = purity / row_indexes.size();
 
-    purity = purity / sum_of_count;
-    std::cout << purity << std::endl;
     if (purity >= min_purity) {
-        // Create leaf node
-        NodePtr node = std::make_unique<Node>(new Node());
+        // Create leaf node if the data is pure enough
+        NodePtr node = std::make_unique<Node>();
         node->is_leaf = true;
         node->value = max_category;
         return node;
     } else {
+        // if the data is not pure enough, make split (or branch node)
         double category, best_feature, min_entropy = 1.7976931348623157E+308;
         size_t best_split=0, counter;
 
+        // search every feature for best split
         for (size_t feature = 0; feature < df.get_num_features(); feature++ ) {
             counter = 0;
             sort_by_feature(row_indexes, feature, df);
@@ -89,9 +90,11 @@ NodePtr DecisionTreeModel::build_node(const DataFrame& df, std::vector<size_t>& 
                 less_value_counts[category]--;
                 greater_value_counts[category]++;
 
+
                 double entropy = calculate_entropy(greater_value_counts, counter) +
                                  calculate_entropy(less_value_counts, row_indexes.size() -counter);
 
+                // if the current split is better than the previous ones, save it
                 if (entropy < min_entropy) {
                     min_entropy = entropy;
                     best_feature = feature;
@@ -99,6 +102,7 @@ NodePtr DecisionTreeModel::build_node(const DataFrame& df, std::vector<size_t>& 
                     }
                 }
 
+            // reset the value_counts for the next iterations
             std::swap(less_value_counts, greater_value_counts);
             }
 
@@ -106,11 +110,13 @@ NodePtr DecisionTreeModel::build_node(const DataFrame& df, std::vector<size_t>& 
         std::vector<size_t> less_indexes(row_indexes.begin(), row_indexes.begin() + best_split),
                     greater_indexes(row_indexes.begin() + best_split, row_indexes.end());
 
-        NodePtr node = std::make_unique<Node>(new Node());
+        //
+        NodePtr node = std::make_unique<Node>();
         node->is_leaf = false;
         node->index = best_feature;
         node->threshold = df.get_data(greater_indexes[0])[best_feature];
 
+        //recursively build the other nodes
         node->less = build_node(df, less_indexes);
         node->gretereq = build_node(df, greater_indexes);
         return node;
