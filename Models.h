@@ -34,4 +34,18 @@ class KNNModel : public Model {
         void fit(const DataFrame&) override;
 };
 
+class LinearRegressionModel : public Model {
+    private:
+        // numbers of columns we want to tie with linear regression
+        int x = 0;
+        int y = 1;
+
+        double slope;
+        double intercept;
+    public:
+        explicit LinearRegressionModel(unsigned int);
+        double predict(Row) const override;
+        std::vector<Row> choose_data(const DataFrame&, int x, int y);
+        void fit(const DataFrame&) override;
+};
 #endif //MODELS_H

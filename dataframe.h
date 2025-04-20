@@ -54,6 +54,12 @@ public:
 
     //splits dataset into two - training and test sets
     std::pair<DataFrame, DataFrame> train_test_split(float) const;
+
+    // creating methods returning iterators to data (helps to iterate through dataset in linear regression)
+    auto begin() const { return data.begin(); }
+    auto end() const { return data.end(); }
+    auto begin() { return data.begin(); }
+    auto end() { return data.end(); }
 };
 
 
