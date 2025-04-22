@@ -8,4 +8,5 @@ add_executable(Atlas_projekt main.cpp
         dataframe.cpp
         Models.h
         decisiontree.cpp
+        regressortree.cpp
 )
