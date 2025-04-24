@@ -6,14 +6,15 @@
 
 int main() {
 
-    DataFrame data_frame("gini_coefficient_test_data.csv", true, ",");
+    DataFrame data_frame("regression_tree_training_data.csv", true, ",");
 
-    RegressionTreeModel model;
+    RegressionTreeModel model(0.2);
 
-    std::vector<size_t> row_indexes(data_frame.length());
-    iota(row_indexes.begin(), row_indexes.end(), 0);
+    model.fit(data_frame);
 
-    std::cout << model.calculate_gini(row_indexes ,data_frame) << std::endl;
+
+
+    //std::cout << model.calculate_gini(row_indexes ,data_frame) << std::endl;
 
 
 

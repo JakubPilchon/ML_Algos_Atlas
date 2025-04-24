@@ -61,7 +61,7 @@ class DecisionTreeModel : public Model {
     NodePtr build_node(const DataFrame&, std::vector<size_t>&s ) const;
 
     public:
-        DecisionTreeModel(double min_purity = 0.9) {
+        DecisionTreeModel(double min_purity = 0.1) {
             if (min_purity <= 0 || min_purity > 1) {
                 throw std::invalid_argument("min_purity must be between 0 and 1");
             }
@@ -74,6 +74,7 @@ class DecisionTreeModel : public Model {
 
 class RegressionTreeModel : public Model {
     double min_purity;
+    NodePtr first;
 public:
     explicit RegressionTreeModel(double min_purity = 0.9) {
         if (min_purity <= 0 || min_purity > 1) {
