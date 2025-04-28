@@ -52,16 +52,16 @@ struct Node {
 };
 
 class DecisionTreeModel : public Model {
-    private:
-        double min_purity;
-        NodePtr first;
+
+    double min_purity;
+    NodePtr first;
 
     double calculate_entropy(const std::map<double, size_t>&, size_t) const;
     void sort_by_feature(std::vector<size_t>& indexes,  size_t feature, const DataFrame& df) const;
     NodePtr build_node(const DataFrame&, std::vector<size_t>&s ) const;
 
     public:
-        DecisionTreeModel(double min_purity = 0.1) {
+        DecisionTreeModel(double min_purity = 0.1)   {
             if (min_purity <= 0 || min_purity > 1) {
                 throw std::invalid_argument("min_purity must be between 0 and 1");
             }
@@ -73,19 +73,16 @@ class DecisionTreeModel : public Model {
 };
 
 class RegressionTreeModel : public Model {
-    double min_purity;
+    double min_error_value;
+    unsigned int  max_depth;
     NodePtr first;
-public:
-    explicit RegressionTreeModel(double min_purity = 0.9) {
-        if (min_purity <= 0 || min_purity > 1) {
-            throw std::invalid_argument("min_purity must be between 0 and 1");
 
-        }
-        this->min_purity = min_purity;
-    }
-    double calculate_gini(std::vector<size_t>, const DataFrame&) const;
+public:
+    RegressionTreeModel(double min_error_value = 0.1, unsigned int max_depth=3) : min_error_value(min_error_value), max_depth(max_depth) {};
+
+    double calculate_mse(std::vector<size_t>, const DataFrame&) const;
     void sort_by_feature(std::vector<size_t>& indexes,  size_t feature, const DataFrame& df) const;
-    NodePtr build_node(const DataFrame&, std::vector<size_t>&s ) const;
+    NodePtr build_node(const DataFrame&, std::vector<size_t>&s , unsigned int depth);
 
     double predict(Row) const override;
     void fit(const DataFrame&) override;

@@ -3,25 +3,30 @@
 //
 #include "Models.h"
 #include <algorithm>
+#include <cmath>
 #include <numeric>
 #include <iostream>
+#include <limits>
 
-double RegressionTreeModel::calculate_gini(std::vector<size_t> indexes, const DataFrame &df) const {
-    double lorentz_area = 0; //
-    double sum = 0;
-    sort(indexes.begin(), indexes.end(),
-        [df](size_t i1, size_t i2) {return df.get_target(i1) < df.get_target(i2);});
+double RegressionTreeModel::calculate_mse(std::vector<size_t> indexes, const DataFrame &df) const {
 
-
-    double last = 0, dy;
-    for (size_t i :indexes) {
-        dy = df.get_target(i) - last;
-        lorentz_area += (dy/2 + sum);
-        last = df.get_target(i);
-        sum += df.get_target(i);
+    if (indexes.size() == 0) {
+        return std::numeric_limits<double>::infinity();
     }
 
-    return 1 - 2*lorentz_area/(sum*indexes.size());
+    double mean=0, mse=0;
+    // calculate the mean of the given observations samples
+    for (auto i : indexes) {
+        mean += df.get_target(i);
+    }
+    mean /= indexes.size();
+
+    // no we calculate the mea nsquared error between the mean and the real taregt values
+    for (auto i : indexes) {
+        mse += pow(df.get_target(i) - mean, 2);
+
+    }
+    return mse/indexes.size();
 }
 
 void RegressionTreeModel::fit(const DataFrame &df) {
@@ -33,13 +38,13 @@ void RegressionTreeModel::fit(const DataFrame &df) {
     iota(row_indexes.begin(), row_indexes.end(), 0);
 
 
-    first = build_node(df, row_indexes);
+    first = build_node(df, row_indexes, 0);
 }
 
-NodePtr RegressionTreeModel::build_node(const DataFrame &df, std::vector<size_t> &row_indexes) const {
-    double purity = calculate_gini(row_indexes, df);
+NodePtr RegressionTreeModel::build_node(const DataFrame &df, std::vector<size_t> &row_indexes, unsigned int depth)  {
+    double error_value = calculate_mse(row_indexes, df);
 
-    if (purity <= min_purity) {
+    if (error_value <= min_error_value || depth == max_depth) {
         NodePtr node = std::make_unique<Node>();
         node->is_leaf = true;
         double mean = 0;
@@ -47,46 +52,47 @@ NodePtr RegressionTreeModel::build_node(const DataFrame &df, std::vector<size_t>
         for (size_t i : row_indexes)
             mean += df.get_target(i);
 
-        mean = mean/row_indexes.size();
+        mean = mean/(row_indexes.size());
         node->value = mean;
-        std::cout << "created leaf node: " << mean << " Purity: " << purity<< std::endl;
         return node;
     } else {
         // if the data sample is not pure enough we need to get the best split
         size_t  best_split, best_feature;
-        double best_purity = 1, current_purity;
-        std::vector<size_t> greater_indexes;
+        double best_error = 1.7976931348623157E+308, current_error;
 
-        for (size_t feature = 0; feature < df.get_num_features(); feature++ ) {
-            sort_by_feature(row_indexes, feature, df);
+        for (size_t f = 0; f < df.get_num_features()-1; f++) {
+            sort_by_feature(row_indexes, f, df);
 
-            for (size_t i = 0; i < row_indexes.size(); i++) {
-                greater_indexes.push_back(row_indexes.back());
-                row_indexes.pop_back();
+            for (size_t i =0; i<row_indexes.size(); i++) {
+                std::vector<size_t> lesser_indexes(row_indexes.begin(), row_indexes.begin() + i),
+                    greater_indexes(row_indexes.begin() + i, row_indexes.end());
 
-                current_purity = (calculate_gini(greater_indexes, df) + calculate_gini(row_indexes, df))/2;
 
-                if (current_purity < best_purity) {
-                    best_purity = current_purity;
+                current_error = (calculate_mse(lesser_indexes, df)*lesser_indexes.size()
+                    + calculate_mse(greater_indexes, df)*greater_indexes.size())/row_indexes.size();
+
+                if (current_error < best_error) {
+                    best_error = current_error;
+                    best_feature = f;
                     best_split = i;
-                    best_feature = feature;
                 }
             }
-            std::swap(greater_indexes, row_indexes);
+            sort_by_feature(row_indexes, best_feature, df);
+
+            NodePtr node = std::make_unique<Node>();
+            node->is_leaf = false;
+
+            std::vector<size_t> lesser(row_indexes.begin(), row_indexes.begin() + best_split),
+                                greater(row_indexes.begin() + best_split, row_indexes.end());
+
+            node->threshold = df.get_data(greater[0])[best_feature];
+            node->index = best_feature;
+            node->gretereq = build_node(df, greater, depth+1);
+            node->less = build_node(df, lesser, depth+1);
+            return node;
         }
-        sort_by_feature(row_indexes, best_feature, df);
-        NodePtr node = std::make_unique<Node>();
-        node->is_leaf = false;
-        node->threshold = row_indexes[best_split];
 
-        std::vector<size_t> lesser(row_indexes.begin(), row_indexes.begin() + best_split),
-                            greater(row_indexes.begin() + best_split, row_indexes.end());
-
-        node->gretereq = build_node(df, greater);
-        node->less = build_node(df, lesser);
-        return node;
     }
-
 }
 
 
@@ -97,9 +103,11 @@ double RegressionTreeModel::predict(Row row) const {
 
     auto node = first.get();
     while (node->is_leaf == false) {
+
         if (row[node->index] >= node->threshold) {
             node = node->gretereq.get();
         } else {
+
             node = node->less.get();
         }
     }

@@ -1,22 +1,32 @@
 #include <iostream>
 #include <algorithm>
+#include <cmath>
+
 #include "dataframe.h"
 #include <numeric>
 #include "Models.h"
 
 int main() {
 
-    DataFrame data_frame("regression_tree_training_data.csv", true, ",");
+    DataFrame df("generated_dataset.csv", true, ",");
 
-    RegressionTreeModel model(0.2);
+    RegressionTreeModel model(2, 7);
 
-    model.fit(data_frame);
+    auto [train_df, test_df] = df.train_test_split(0.2);
+    model.fit(train_df);
 
+    double mse =0;
 
+    for (int i =0; i<test_df.length(); i++) {
+        auto [data, target] = test_df[i];
+        mse += std::pow(target - model.predict(data), 2);
+    }
 
-    //std::cout << model.calculate_gini(row_indexes ,data_frame) << std::endl;
+    mse = mse / test_df.length();
 
+    std::cout << "MSE: " << mse << std::endl;
 
+    // under code for classifier tree
 
     // data_frame.shuffle_data();
     // auto [train_data, test_data] = data_frame.train_test_split(0.1);
