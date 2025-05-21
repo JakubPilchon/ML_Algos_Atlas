@@ -4,12 +4,12 @@
 
 int main() {
 
-    DataFrame data_frame("test_data_2.csv", true, ",");
+    DataFrame data_frame("startup_data.csv", true, ",");
 
     data_frame.shuffle_data();
     auto [train_data, test_data] = data_frame.train_test_split(0.1);
 
-    LogisticRegressionModel model;
+    LogisticRegressionModel model(0.001, 1000);
 
     model.fit(train_data);
 
