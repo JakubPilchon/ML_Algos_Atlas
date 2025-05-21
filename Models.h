@@ -44,6 +44,7 @@ class LogisticRegressionModel : public Model {
     double learning_rate=0.001;
     double epochs=1000;
 public:
+    LogisticRegressionModel(double lr, double e);
     double predict(Row) const override;
     void fit(const DataFrame&) override;
 //    double compute_cost(const DataFrame&); // testing whether the function accuracy improved or not; used for debugging
