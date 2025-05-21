@@ -15,6 +15,7 @@
 - [ ] [Walidacja krzyżowa](https://pl.wikipedia.org/wiki/Sprawdzian_krzy%C5%BCowy)
 - [ ] funckja do sprawdzania [Dokładności precyzji i czułości](https://developers.google.com/machine-learning/crash-course/classification/accuracy-precision-recall?hl=pl)
 - [ ] Model - [Regresja liniowa](https://www.youtube.com/watch?v=7ArmBVF2dCs)
-- [ ] Model - [Regresja logistyczna](https://www.youtube.com/watch?v=yIYKR4sgzI8&list=PLblh5JKOoLUKxzEP5HA2d-Li7IJkHfXSe)
-- [ ] Model - [Drzewa decyzyjne](https://www.youtube.com/watch?v=_L39rN6gz7Y)
+- [x] Model - [Regresja logistyczna](https://www.youtube.com/watch?v=yIYKR4sgzI8&list=PLblh5JKOoLUKxzEP5HA2d-Li7IJkHfXSe)
+- [x] Model - [Drzewa decyzyjne](https://www.youtube.com/watch?v=_L39rN6gz7Y)
+- [x] Model - Drzewo regresyjne 
 - [ ] *To be continued...*

@@ -1,9 +1,11 @@
 #include <iostream>
+#include <algorithm>
+#include <cmath>
+
 #include "dataframe.h"
 #include "Models.h"
 
 int main() {
-
     DataFrame data_frame("startup_data.csv", true, ",");
 
     data_frame.shuffle_data();

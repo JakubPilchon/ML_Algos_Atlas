@@ -91,6 +91,8 @@ DataFrame::DataFrame(const std::string& file_name, bool uses_headers, const char
 }
 
 std::pair<Row, double> DataFrame::operator[](size_t i) const {
+    if (i>=length())
+        throw std::runtime_error("Index is out of bounds");
     return {data[i], target[i]};
 }
 
