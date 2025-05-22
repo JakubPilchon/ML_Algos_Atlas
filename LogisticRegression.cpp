@@ -14,7 +14,7 @@ double LogisticRegressionModel::predict(std::shared_ptr<double[]> row) const {
     for (size_t i=0; i<weights.size(); ++i) {
         z += (row[i])*weights[i];
     }
-    return logit(z);
+    return round(logit(z));
 
 }
 
