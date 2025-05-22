@@ -22,7 +22,7 @@ int main() {
         std::cout << "Prediction: " << prediction << std::endl;
         std::cout << "True value: " << target << std::endl;
 
-        if (std::max(prediction-target, target-prediction)<0.05) {
+        if (prediction==target) {
             good_prediction++;
         }
     }
