@@ -46,6 +46,12 @@ void LogisticRegressionModel::fit(const DataFrame& df) {
         }
         bias -= learning_rate * db / n_samples;
 
+        double loss = LogLoss(df);  //added
+        double acc = accuracy(df);
+        std::cout << "Epoch " << (epoch + 1) << "/" << epochs
+                  << " - LogLoss: " << loss
+                  << " - Accuracy: " << acc << std::endl;
+
       /* ((this is for degubbing))
           if (epoch % 100 == 0) {
             double cost = compute_cost(df);
