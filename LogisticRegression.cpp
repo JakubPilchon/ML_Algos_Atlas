@@ -5,7 +5,7 @@
 #include "Models.h"
 #include <bits/stdc++.h>
 
-LogisticRegressionModel::LogisticRegressionModel(double lr, double e ) :learning_rate(lr), epochs(e), bias(0.0) {}
+LogisticRegressionModel::LogisticRegressionModel(double lr, double e ) :learning_rate(lr), epochs(e), bias(0.0) {}  //bias added
 
 
 double LogisticRegressionModel::predict(std::shared_ptr<double[]> row) const {
@@ -111,5 +111,5 @@ double LogisticRegressionModel::logit(double z) const {
     return 1.0/(1.0+exp(-z));
 }
 void LogisticRegressionModel::weights_resize(unsigned int a) {
-    weights.assign(a, 0.0);
+    weights.assign(a, 0.0);  //changed
 }
