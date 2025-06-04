@@ -11,9 +11,9 @@
   - Kiedy będziemy implementować poszczególne modele to z tej klasy będziemy [dziedziczyć](https://www.youtube.com/watch?v=ZesZXlBcROA).
     Potem się to nam przyda (by potem wrzucać modele do tych samych funkcji dzięki [poliformizmowi](https://www.youtube.com/watch?v=9hGPe6BnTY4))
   - zaimplementować [wirtualne](https://www.geeksforgeeks.org/virtual-function-cpp/) metody: `fit`, `predict`
-- [ ] Model - [KNN](https://www.youtube.com/watch?v=HVXime0nQeI)
+- [x] Model - [KNN](https://www.youtube.com/watch?v=HVXime0nQeI)
 - [ ] [Walidacja krzyżowa](https://pl.wikipedia.org/wiki/Sprawdzian_krzy%C5%BCowy)
-- [ ] funckja do sprawdzania [Dokładności precyzji i czułości](https://developers.google.com/machine-learning/crash-course/classification/accuracy-precision-recall?hl=pl)
+- [x] funckja do sprawdzania [Dokładności precyzji i czułości](https://developers.google.com/machine-learning/crash-course/classification/accuracy-precision-recall?hl=pl)
 - [ ] Model - [Regresja liniowa](https://www.youtube.com/watch?v=7ArmBVF2dCs)
 - [x] Model - [Regresja logistyczna](https://www.youtube.com/watch?v=yIYKR4sgzI8&list=PLblh5JKOoLUKxzEP5HA2d-Li7IJkHfXSe)
 - [x] Model - [Drzewa decyzyjne](https://www.youtube.com/watch?v=_L39rN6gz7Y)
