@@ -1,9 +1,10 @@
 #include <iostream>
 #include "dataframe.h"
+#include "Models.h"
 
 int main() {
 
-    DataFrame data_frame("test_data_2.csv", true, ",");
+    DataFrame data_frame("iris.csv", true, ",");
     std::cout << data_frame.get_num_features() << std::endl;
     for (auto header : data_frame.head_names) {
         std::cout << header << std::endl;
@@ -23,5 +24,10 @@ int main() {
 
     auto row2 = train_dataframe.get_data(0);
     std::cout << row2[0] << std::endl;
+
+    std::cout << "Test regresji liniowej" << std::endl;
+    LinearRegressionModel model;
+    model.fit(data_frame);
+    std::cout << "Model wytrenowany" << std::endl;
     return 0;
 }

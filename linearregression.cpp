@@ -6,60 +6,53 @@
 #include <vector>
 #include <cmath>
 
-// y = slope * x + intercept
+LinearRegressionModel::LinearRegressionModel() : intercept(0.0) {}
+
+// y = w1*x1 + w2*x2 + ... + wn*xn + b
 double LinearRegressionModel::predict(Row row) const {
-    return slope * row[0] + intercept;
-}
-
-// making new data set with only two coluns to use it in linear regression
-std::vector<Row> LinearRegressionModel::choose_data(const DataFrame& df, int _x, int _y) {
-    // we create new vector which will be our new two-column data set
-    std::vector<Row> result;
-
-    // we check if there is enough colums
-    if(df.get_num_features() <= std::max(_x,_y)){
-        throw std::out_of_range("Given indice is out of range.");
+    double result = intercept;
+    for (size_t i = 0; i < weights.size(); i++) {
+        result += weights[i] * row[i];
     }
-
-    for (auto row : df) {
-          // we make dynamic array for x and y
-            Row new_row(new double[2]);
-            new_row[0] = row[_x];
-            new_row[1] = row[_y];
-
-            result.push_back(new_row);
-        }
-
     return result;
 }
 
 void LinearRegressionModel::fit(const DataFrame& df) {
-    // we make our two-collumn data set
-    auto data = choose_data(df, x, y);
+    size_t n_samples = df.length();
+    size_t n_features = df.get_num_features();
 
-    double mean_x = 0, mean_y = 0;
-    size_t n = data.size();
+    weights = std::vector<double>(n_features, 0.0);
+    double intercept = 0.0;
 
-    // calculating mean of x and y
-    for (const auto& row : data) {
-        mean_x += row[0];
-        mean_y += row[1];
+    std::vector<double> mean_x(n_features, 0.0);
+    double mean_y = 0.0;
+
+    for (size_t i = 0; i < n_samples; i++) {
+        auto [row, target] = df[i];
+        for (size_t j = 0; j < n_features; j++){
+            mean_x[j] += row[j];
+        }
+        mean_y += target;
     }
 
-    mean_x /= n;
-    mean_y /= n;
-
-    // calculating value of slope
-    double numerator = 0;
-    double denominator = 0;
-
-    for (const auto& row : data) {
-      numerator += (row[0] - mean_x) * (row[1] - mean_y);
-      denominator += (row[0] - mean_x) * (row[0] - mean_y);
+    for (size_t j = 0; j < n_features; j++) {
+        mean_x[j] /= n_samples;
     }
 
-    slope = numerator / denominator;
+    for (size_t j = 0; j < n_features; j++) {
+        double numerator = 0.0;
+        double denominator = 0.0;
+        for (size_t i = 0; i < n_samples; i++) {
+            auto [row, target] = df[i];
+            numerator += (row[j] - mean_x[j]) * (target - mean_y);
+            denominator += (row[j] - mean_x[j]) * (row[j] - mean_x[j]);
+        }
 
-    // calculating intercept
-    intercept = mean_y / slope * mean_x;
+        weights[j] = numerator / denominator;
+    }
+
+    intercept = mean_y;
+    for (size_t j = 0; j < n_features; j++) {
+        intercept -= weights[j] * mean_x[j];
+    }
 }

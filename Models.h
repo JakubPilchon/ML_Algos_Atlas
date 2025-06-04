@@ -10,18 +10,18 @@
  *  This way we could use polymorphism i.e. metrics classes
  *  model should implement virtual methods of `Model` class, where:
  *  - `predict` - method for predicting single row
- *  - `fit` method for training the model, this should take as an argument only the Datframe object reference
+ *  - `fit` method for training the model, this should take as an argument only the Dataframe object reference
  *  every model hyperparameter (i.e. k in KNN) should be taken in constructor, not in `fit` method!
- *  Please also that every model should be written in diffrent files i.e. KNN in knn.cpp, Logistic regression in logres.cpp etc
+ *  Please also that every model should be written in different files i.e. KNN in knn.cpp, Logistic regression in logres.cpp etc
  *  but headers of the models should be in this file!
  */
 class Model {
     public:
         // this method predicts the single target of the row
-        virtual double predict(Row) const;
+        virtual double predict(Row) const = 0;
 
         // this method trains the models
-        virtual void fit(const DataFrame&);
+        virtual void fit(const DataFrame&) = 0;
 };
 
 class KNNModel : public Model {
@@ -36,14 +36,10 @@ class KNNModel : public Model {
 
 class LinearRegressionModel : public Model {
     private:
-        // numbers of columns we want to tie with linear regression
-        int x = 0;
-        int y = 1;
-
-        double slope;
+        std::vector<double> weights;
         double intercept;
     public:
-        explicit LinearRegressionModel(unsigned int);
+        explicit LinearRegressionModel();
         double predict(Row) const override;
         std::vector<Row> choose_data(const DataFrame&, int x, int y);
         void fit(const DataFrame&) override;
