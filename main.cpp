@@ -1,27 +1,31 @@
 #include <iostream>
+#include <algorithm>
+#include <cmath>
+
 #include "dataframe.h"
+#include "Models.h"
 
 int main() {
+    DataFrame data_frame("startup_data.csv", true, ",");
 
-    DataFrame data_frame("test_data_2.csv", true, ",");
-    std::cout << data_frame.get_num_features() << std::endl;
-    for (auto header : data_frame.head_names) {
-        std::cout << header << std::endl;
+    data_frame.shuffle_data();
+    auto [train_data, test_data] = data_frame.train_test_split(0.1);
+
+    LogisticRegressionModel model(0.001, 1000);
+
+    model.fit(train_data);
+
+    double good_prediction = 0;
+    for (int i =0; i<test_data.length(); i++) {
+        auto [data, target] = test_data[i];
+        double prediction = model.predict(data);
+        std::cout << "Prediction: " << prediction << std::endl;
+        std::cout << "True value: " << target << std::endl;
+
+        if (prediction==target) {
+            good_prediction++;
+        }
     }
-
-    auto [train_dataframe, test_dataframe] = data_frame.train_test_split(0.5);
-
-    std::cout << "Train: "  << std::endl;
-    train_dataframe.head();
-
-    std::cout << "Test: "  << std::endl;
-    test_dataframe.head();
-
-    auto [row, t] = train_dataframe[0];
-    std::cout << row[0] << std::endl;
-    std::cout << t << std::endl;
-
-    auto row2 = train_dataframe.get_data(0);
-    std::cout << row2[0] << std::endl;
+    std::cout << "Accuracy: " << good_prediction / test_data.length() << std::endl;
     return 0;
 }
