@@ -7,9 +7,10 @@ add_executable(Atlas_projekt main.cpp
         dataframe.h
         dataframe.cpp
         Models.h
-        master
         decisiontree.cpp
         regressortree.cpp
         LogisticRegression.cpp
         LogisticRegression
+        metrics.h
+        metrics.cpp
 )
