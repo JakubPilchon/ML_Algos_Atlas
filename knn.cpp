@@ -29,3 +29,37 @@ void KNNModel::fit(const DataFrame& df) {
     }
     num_features = df.get_num_features();
 }
+
+double KNNModel::predict(Row x) const {
+    if (train_data.empty()) {
+        throw std::runtime_error("Model nie został nauczony – najpierw wywołaj fit()!");
+    }
+
+    std::vector<std::pair<double, double>> distances; // {distance, label}
+
+    for (size_t i = 0; i < train_data.size(); ++i) {
+        double dist = euclideanDistance(x, train_data[i], num_features);
+        distances.push_back({dist, train_target[i]});
+    }
+
+    std::sort(distances.begin(), distances.end());
+
+    std::map<double, int> class_count;
+
+    for (size_t i = 0; i < k; ++i) {
+        double label = distances[i].second;
+        class_count[label]++;
+    }
+
+    int max_count = 0;
+    double predicted_class = -1;
+
+    for (const auto& entry : class_count) {
+        if (entry.second > max_count) {
+            max_count = entry.second;
+            predicted_class = entry.first;
+        }
+    }
+
+    return predicted_class;
+}
